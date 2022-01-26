@@ -72,7 +72,6 @@ R.
 
 ```{r}
 renv::install(c("caret","dplyr","pROC","tidyr","imbalance", "markdown", "mime", "ellipse", "themis"))
-
 ```
 
 **NOTE:** We may need other packages, but caret should ask us if we want
@@ -769,7 +768,8 @@ current available imbalanced packages in CRAN).
 Build the corresponding tables of results and make a brief analysis if
 any interesting patterns are observed during the experimental analysis.
 
-#Final Comments Hope you enjoyed this tutorial about Imbalanced
+# Final Comments
+Hope you enjoyed this tutorial about Imbalanced
 Classification in Machine Learning. If you need further details on how
 to perform any kind of task, please ask me via email at
 [alberto\@decsai.ugr.es](mailto:alberto@decsai.ugr.es){.email}
