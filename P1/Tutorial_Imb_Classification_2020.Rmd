@@ -555,32 +555,35 @@ for imbalanced classification, such as precision, recall and F1.
 
 ```{r}
 #Carry out a comparison over all imbalanced metrics
-comparison <- data.frame(
-  model = names(models),
-  Sensitivity = rep(NA, length(models)),
-  Specificity = rep(NA, length(models)),
-  Precision = rep(NA, length(models)),
-  Recall = rep(NA, length(models)),
-  F1 = rep(NA, length(models))
-)
-
-for (name in names(models)) {
-  cm_model <- get(paste0("cm.", name))
-  
-  comparison[comparison$model == name, ] <- filter(comparison, model == name) %>% mutate(
-    Sensitivity = cm_model$byClass["Sensitivity"],
-    Specificity = cm_model$byClass["Specificity"],
-    Precision = cm_model$byClass["Precision"],
-    Recall = cm_model$byClass["Recall"],
-    F1 = cm_model$byClass["F1"]
+comparison_metric <- function(models) {
+  comparison <- data.frame(
+    model = names(models),
+    Sensitivity = rep(NA, length(models)),
+    Specificity = rep(NA, length(models)),
+    Precision = rep(NA, length(models)),
+    Recall = rep(NA, length(models)),
+    F1 = rep(NA, length(models))
   )
+
+  for (name in names(models)) {
+    cm_model <- get(paste0("cm.", name))
+    
+    comparison[comparison$model == name, ] <- filter(comparison, model == name) %>% mutate(
+      Sensitivity = cm_model$byClass["Sensitivity"],
+      Specificity = cm_model$byClass["Specificity"],
+      Precision = cm_model$byClass["Precision"],
+      Recall = cm_model$byClass["Recall"],
+      F1 = cm_model$byClass["F1"]
+    )
+  }
+
+  comparison %>%
+    gather(x, y, Sensitivity:F1) %>%
+    ggplot(aes(x = x, y = y, color = model)) +
+    geom_jitter(width = 0.2, alpha = 0.5, size = 3)
 }
 
-comparison %>%
-  gather(x, y, Sensitivity:F1) %>%
-  ggplot(aes(x = x, y = y, color = model)) +
-  geom_jitter(width = 0.2, alpha = 0.5, size = 3)
-
+comparison_metric(models)
 ```
 
 #Additional activities
@@ -630,7 +633,19 @@ imbalanceRatio(testData)
 ```
 
 ```{r}
-# Execute models
+model.raw <- learn_model(
+  trainData,
+  trainControl(
+    method="repeatedcv",
+    number=5,
+    repeats = 3,
+    classProbs=TRUE,
+    summaryFunction = twoClassSummary,
+  ),
+  "raw"
+)
+cm.raw <- test_model(testData, model.raw, "raw")
+
 model.undersampling <- learn_model(
   trainData,
   trainControl(
@@ -641,9 +656,9 @@ model.undersampling <- learn_model(
     summaryFunction = twoClassSummary,
     sampling = "down"
   ),
-  "US"
+  "undersampling"
 )
-cm.undersampling <- test_model(testData, model.undersampling, "US")
+cm.undersampling <- test_model(testData, model.undersampling, "undersampling")
 
 model.oversampling <- learn_model(
   trainData,
@@ -655,9 +670,9 @@ model.oversampling <- learn_model(
     summaryFunction = twoClassSummary,
     sampling = "up"
   ),
-  "OS"
+  "oversampling"
 )
-cm.oversampling <- test_model(testData, model.oversampling, "OS")
+cm.oversampling <- test_model(testData, model.oversampling, "oversampling")
 
 model.smote <- learn_model(
   trainData,
@@ -675,9 +690,22 @@ cm.smote <- test_model(testData, model.smote, "smote")
 
 # Summarize performance of models
 
-# Carry out a visual comparison over all imbalanced metrics
+models <- list(
+  raw = model.raw,
+  undersampling = model.undersampling,
+  oversampling = model.oversampling,
+  smote = model.smote
+)
+results <- resamples(models)
+summary(results)
 
+# Carry out a visual comparison over all imbalanced metrics
+bwplot(results)
+comparison_metric(models)
 ```
+
+Se puede observar que si no se aplican técnicas de balanceo sobre el dataset (el modelo raw),
+la capacidad de poder clasificar bien las instancias de la clase positiva (la clase minoritaria) es pésima.
 
 Write a short comment on the main conclusions obtained throughout the
 experimental analysis. Focus on the most interesting behavior achieved
