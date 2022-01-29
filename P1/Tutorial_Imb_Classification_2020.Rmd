@@ -141,7 +141,7 @@ glass0 dataset for us, among others. Load the dataset as follows:
 # attach the glass0 dataset to the environment
 data(glass0)
 # rename the dataset
-dataset <- glass0
+glassDataset <- glass0
 ```
 
 You now have the glass0 loaded in R and accessible via the dataset
@@ -561,7 +561,6 @@ comparison_metric <- function(models) {
     Sensitivity = rep(NA, length(models)),
     Specificity = rep(NA, length(models)),
     Precision = rep(NA, length(models)),
-    Recall = rep(NA, length(models)),
     F1 = rep(NA, length(models))
   )
 
@@ -572,7 +571,6 @@ comparison_metric <- function(models) {
       Sensitivity = cm_model$byClass["Sensitivity"],
       Specificity = cm_model$byClass["Specificity"],
       Precision = cm_model$byClass["Precision"],
-      Recall = cm_model$byClass["Recall"],
       F1 = cm_model$byClass["F1"]
     )
   }
@@ -704,13 +702,27 @@ bwplot(results)
 comparison_metric(models)
 ```
 
-Se puede observar que si no se aplican técnicas de balanceo sobre el dataset (el modelo raw),
-la capacidad de poder clasificar bien las instancias de la clase positiva (la clase minoritaria) es pésima.
+Si nos fijamos en los diagramas de cajas, que muestran las métricas ROC, Sensibilidad y Especificidad y cuyo conjunto de
+resultados se han obtenido con los diferentes folds y la técnica de balanceo, se puede observar que el modelo básico "raw" 
+tiene bastantes problemas en clasificar las instancias de la clase minoritaria (sensibilidad) mientras que clasifica
+bastante bien los ejemplos de la clase mayoritaria (especificidad).
 
-Write a short comment on the main conclusions obtained throughout the
-experimental analysis. Focus on the most interesting behavior achieved
-by the methods applied, observing whether there are some special
-capabilities to be stressed by any particular approach.
+Respecto a aplicar oversampling y undersampling aleatorio, se observa un trade-off bastante claro entre la sensibilidad y 
+especificidad. Mientras que mejora de una manera considerable la sensibilidad y por lo tanto, la capacidad de clasificar
+correctamente las instancias de la clase minoritaria es mucho mejor, la especificidad empeora levemente si lo comparamos con la especificad del modelo base o raw.
+
+Por último, la aplicación de SMOTE hace que mejore la capacidad de clasificar las instancias de la clase minoritaria respecto al modelo original y además consigue que el trade-off entre sensibilidad y especificidad no sea perjudicial para este último. De hecho, consigue tener una especificidad muy similar al del modelo base. Lo único que habría que destacar sobre la aplicación de SMOTE es que la métrica sensibilidad presenta una distancia intercuartil bastante considerable, y por lo tanto una gran dispersión entre los resultados, cosa que no ocurre con undersampling y oversampling.
+
+Ahora nos fijamos en la gráfica en la que se muestran las métricas F1, Precisión, Sensibilidad y Especificidad. Se tiene que
+indicar que F1 es una métrica que se calcula utilizando la precisión y la sensibilidad (también llamada recall), y también que la precisión se calcula como el ratio entre aquellos que son verdaderamente de la clase positiva y la suma de los que ha considerado el modelo como de la clase positiva.
+
+En esta gráfica se puede observar que el modelo base (sin aplicarle ninguna técnica de balanceo) predomina con la mejor métrica en F1, precisión y especificidad. Como el objetivo de las técnicas de balanceo es hacer que el modelo clasifique mejor la clase minoritaria, y que por lo tanto, clasifique las dos clases de la manera correcta, habría que ver aquellos que tienen una métrica buena en sensiblidad y especificidad, y en el que el trade-off sea favorable para los dos. Como se ha comentado en la gráfica anterior, el método que conseguía esto era SMOTE.
+
+Aunque aplicando SMOTE solo se consigue que la métrica de sensibilidad sea solo la tercera mejor (casi un 0.85), consigue también mantener la métrica de la especificidad y que no se desplome, tal y como pasa con el undersampling y el oversampling. Por último,
+si nos fijamos en la métrica F1, vemos que el modelo en el que se aplica SMOTE y el modelo base rinden de manera similar mientras que en la precisión el modelo base es mucho mejor.
+
+En el caso en el que no nos importe clasificar algunas instancias negativas (las que son cercanas al "cluster" de instancias positivas o están dentro de ese cluster) y clasificar mejor las instancias de la clase minoritaria, el mejor modelo a considerar es aquel en el que se aplica SMOTE.
+
 
 ## Activity 2: Using the "imbalance" library (mandatory)
 
@@ -737,12 +749,103 @@ apply them over some of the datasets provided by the package (ecoli1,
 glass0, haberman or yeast4, for example). Are there any significant
 differences among the results?
 
+Se ha utilizado el dataset Glass0 y los métodos de smote base, mwsmote, blsmote y dbsmote. Para poder comprobar el balanceo,
+se ha ejecutado un kNN para cada nuevo dataset y el original utilizando la función de caret
+
 ```{r}
 # Load the data
+glassDataset
 
 # Apply preprocessing with oversample function
+glassDataset.smote <- imbalance::oversample(
+  glassDataset,
+  method="SMOTE",
+  ratio = .5
+)
+imbalanceRatio(glassDataset.smote)
+
+glassDataset.mwmote <- imbalance::oversample(
+  glassDataset,
+  method="MWMOTE",
+  ratio = .5
+)
+imbalanceRatio(glassDataset.mwmote)
+
+glassDataset.blsmote <- imbalance::oversample(
+  glassDataset,
+  method="BLSMOTE",
+  ratio = .5
+)
+imbalanceRatio(glassDataset.blsmote)
+
+glassDataset.dbsmote <- imbalance::oversample(
+  glassDataset,
+  method="DBSMOTE",
+  ratio = .5
+)
+imbalanceRatio(glassDataset.dbsmote)
 
 # Check results with kNN, DT or any other classifier
+
+model.raw.glass <- train(
+  Class ~ .,
+  data = glassDataset,
+  method = "knn",
+  trControl = trainControl(
+    classProbs = T,
+    summaryFunction = twoClassSummary
+  ),
+  preProcess = c("center","scale"),
+  metric="ROC"
+)
+
+model.smote.glass <- train(
+  Class ~ .,
+  data = glassDataset.smote,
+  method = "knn",
+  trControl = trainControl(
+    classProbs = T,
+    summaryFunction = twoClassSummary
+  ),
+  preProcess = c("center","scale"),
+  metric="ROC"
+)
+
+model.mwmote.glass <- train(
+  Class ~ .,
+  data = glassDataset.mwmote,
+  method = "knn",
+  trControl = trainControl(
+    classProbs = T,
+    summaryFunction = twoClassSummary
+  ),
+  preProcess = c("center","scale"),
+  metric="ROC"
+)
+
+model.blsmote.glass <- train(
+  Class ~ .,
+  data = glassDataset.blsmote,
+  method = "knn",
+  trControl = trainControl(
+    classProbs = T,
+    summaryFunction = twoClassSummary
+  ),
+  preProcess = c("center","scale"),
+  metric="ROC"
+)
+
+model.dbsmote.glass <- train(
+  Class ~ .,
+  data = glassDataset.dbsmote,
+  method = "knn",
+  trControl = trainControl(
+    classProbs = T,
+    summaryFunction = twoClassSummary
+  ),
+  preProcess = c("center","scale"),
+  metric="ROC"
+)
 
 ```
 
