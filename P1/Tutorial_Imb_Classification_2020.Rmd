@@ -1,7 +1,7 @@
 ---
 title: "Tutorial on Imbalanced Classification Tasks"
 author: "Daniel Ranchal Parrado (danielranchal@correo.ugr.es)"
-date: "January 18, 2022"
+date: "January 29, 2022"
 output: html_notebook
 ---
 
@@ -702,26 +702,19 @@ bwplot(results)
 comparison_metric(models)
 ```
 
-Si nos fijamos en los diagramas de cajas, que muestran las métricas ROC, Sensibilidad y Especificidad y cuyo conjunto de
-resultados se han obtenido con los diferentes folds y la técnica de balanceo, se puede observar que el modelo básico "raw" 
-tiene bastantes problemas en clasificar las instancias de la clase minoritaria (sensibilidad) mientras que clasifica
-bastante bien los ejemplos de la clase mayoritaria (especificidad).
+**_Si nos fijamos en los diagramas de cajas, que muestran las métricas ROC, Sensibilidad y Especificidad y cuyo conjunto de resultados se han obtenido con los diferentes folds y la técnicas de balanceo, se puede observar que el modelo básico "raw" tiene bastantes problemas en clasificar las instancias de la clase minoritaria (sensibilidad) mientras que clasifica bastante bien los ejemplos de la clase mayoritaria (especificidad)._**
 
-Respecto a aplicar oversampling y undersampling aleatorio, se observa un trade-off bastante claro entre la sensibilidad y 
-especificidad. Mientras que mejora de una manera considerable la sensibilidad y por lo tanto, la capacidad de clasificar
-correctamente las instancias de la clase minoritaria es mucho mejor, la especificidad empeora levemente si lo comparamos con la especificad del modelo base o raw.
+**_Respecto a aplicar oversampling y undersampling aleatorio, se observa un trade-off bastante claro entre la sensibilidad y especificidad. Mientras que mejora de una manera considerable la sensibilidad y por lo tanto, la capacidad de clasificar correctamente las instancias de la clase minoritaria es mucho mejor, la especificidad empeora levemente si lo comparamos con la especificad del modelo base o raw._**
 
-Por último, la aplicación de SMOTE hace que mejore la capacidad de clasificar las instancias de la clase minoritaria respecto al modelo original y además consigue que el trade-off entre sensibilidad y especificidad no sea perjudicial para este último. De hecho, consigue tener una especificidad muy similar al del modelo base. Lo único que habría que destacar sobre la aplicación de SMOTE es que la métrica sensibilidad presenta una distancia intercuartil bastante considerable, y por lo tanto una gran dispersión entre los resultados, cosa que no ocurre con undersampling y oversampling.
+**_Por último, la aplicación de SMOTE hace que mejore la capacidad de clasificar las instancias de la clase minoritaria respecto al modelo original y además consigue que el trade-off entre sensibilidad y especificidad no sea perjudicial para este último. De hecho, consigue tener una especificidad muy similar al del modelo base. Lo único que habría que destacar sobre la aplicación de SMOTE es que la métrica sensibilidad presenta una distancia intercuartil bastante considerable, y por lo tanto una gran dispersión entre los resultados, cosa que no ocurre con undersampling y oversampling._**
 
-Ahora nos fijamos en la gráfica en la que se muestran las métricas F1, Precisión, Sensibilidad y Especificidad. Se tiene que
-indicar que F1 es una métrica que se calcula utilizando la precisión y la sensibilidad (también llamada recall), y también que la precisión se calcula como el ratio entre aquellos que son verdaderamente de la clase positiva y la suma de los que ha considerado el modelo como de la clase positiva.
+**_Ahora nos fijamos en la gráfica en la que se muestran las métricas F1, Precisión, Sensibilidad y Especificidad. Se tiene que indicar que F1 es una métrica que se calcula utilizando la precisión y la sensibilidad (también llamada recall), y también que la precisión se calcula como el ratio entre aquellos que son verdaderamente de la clase positiva y la suma de los que ha considerado el modelo como de la clase positiva._**
 
-En esta gráfica se puede observar que el modelo base (sin aplicarle ninguna técnica de balanceo) predomina con la mejor métrica en F1, precisión y especificidad. Como el objetivo de las técnicas de balanceo es hacer que el modelo clasifique mejor la clase minoritaria, y que por lo tanto, clasifique las dos clases de la manera correcta, habría que ver aquellos que tienen una métrica buena en sensiblidad y especificidad, y en el que el trade-off sea favorable para los dos. Como se ha comentado en la gráfica anterior, el método que conseguía esto era SMOTE.
+**_En esta gráfica se puede observar que el modelo base (sin aplicarle ninguna técnica de balanceo) predomina con la mejor métrica en F1, precisión y especificidad. Como el objetivo de las técnicas de balanceo es hacer que el modelo clasifique mejor la clase minoritaria, y que por lo tanto, clasifique las dos clases de la manera correcta, habría que ver aquellos que tienen una métrica buena en sensiblidad y especificidad, y en el que el trade-off sea favorable para los dos. Como se ha comentado en la gráfica anterior, el método que conseguía esto era SMOTE._**
 
-Aunque aplicando SMOTE solo se consigue que la métrica de sensibilidad sea solo la tercera mejor (casi un 0.85), consigue también mantener la métrica de la especificidad y que no se desplome, tal y como pasa con el undersampling y el oversampling. Por último,
-si nos fijamos en la métrica F1, vemos que el modelo en el que se aplica SMOTE y el modelo base rinden de manera similar mientras que en la precisión el modelo base es mucho mejor.
+**_Aunque aplicando SMOTE solo se consigue que la métrica de sensibilidad sea solo la tercera mejor (casi un 0.85), consigue también mantener la métrica de la especificidad y que no se desplome, tal y como pasa con el undersampling y el oversampling. Por último, si nos fijamos en la métrica F1, vemos que el modelo en el que se aplica SMOTE y el modelo base rinden de manera similar mientras que en la precisión el modelo base es mucho mejor._**
 
-En el caso en el que no nos importe clasificar algunas instancias negativas (las que son cercanas al "cluster" de instancias positivas o están dentro de ese cluster) y clasificar mejor las instancias de la clase minoritaria, el mejor modelo a considerar es aquel en el que se aplica SMOTE.
+**_En el caso en el que no nos importe clasificar algunas instancias negativas (las que son cercanas al "cluster" de instancias positivas o están dentro de ese cluster) y clasificar mejor las instancias de la clase minoritaria, el mejor modelo a considerar es aquel en el que se aplica SMOTE._**
 
 
 ## Activity 2: Using the "imbalance" library (mandatory)
@@ -731,123 +724,117 @@ that implements some of the most well-known data preprocesing techniques
 for imbalanced classification. We must take a closer look to the
 documentation in both the [imbalance package
 homepage](https://github.com/ncordon/imbalance). or the help function
-
-```{r}
-help("imbalance") #see documentation in the right botton corner
-```
-
 By using the "imbalance" library we may consider the application of
 advanced techniques based on SMOTE. For that purpose, we must focus on
-the "oversample" function:
-
-```{r}
-help("oversample") #see documentation in the right botton corner
-```
+the "oversample" function.
 
 It is your turn to select up to four different SMOTE techniques and
 apply them over some of the datasets provided by the package (ecoli1,
 glass0, haberman or yeast4, for example). Are there any significant
 differences among the results?
 
-Se ha utilizado el dataset Glass0 y los métodos de smote base, mwsmote, blsmote y dbsmote. Para poder comprobar el balanceo,
-se ha ejecutado un kNN para cada nuevo dataset y el original utilizando la función de caret
-
 ```{r}
 # Load the data
-glassDataset
+imbalanceRatio(glassDataset)
 
 # Apply preprocessing with oversample function
 glassDataset.smote <- imbalance::oversample(
   glassDataset,
   method="SMOTE",
-  ratio = .5
+  ratio = .8
 )
-imbalanceRatio(glassDataset.smote)
 
 glassDataset.mwmote <- imbalance::oversample(
   glassDataset,
   method="MWMOTE",
-  ratio = .5
+  ratio = .8
 )
-imbalanceRatio(glassDataset.mwmote)
 
 glassDataset.blsmote <- imbalance::oversample(
   glassDataset,
   method="BLSMOTE",
-  ratio = .5
+  ratio = .8
 )
-imbalanceRatio(glassDataset.blsmote)
 
 glassDataset.dbsmote <- imbalance::oversample(
   glassDataset,
   method="DBSMOTE",
-  ratio = .5
+  ratio = .8
 )
-imbalanceRatio(glassDataset.dbsmote)
 
 # Check results with kNN, DT or any other classifier
 
-model.raw.glass <- train(
-  Class ~ .,
-  data = glassDataset,
-  method = "knn",
-  trControl = trainControl(
-    classProbs = T,
-    summaryFunction = twoClassSummary
-  ),
-  preProcess = c("center","scale"),
-  metric="ROC"
+trainControlGlass <- trainControl(
+  classProbs = T,
+  summaryFunction = twoClassSummary,
+  method="repeatedcv",
+  number=5,
+  repeats = 3,
 )
 
 model.smote.glass <- train(
   Class ~ .,
   data = glassDataset.smote,
   method = "knn",
-  trControl = trainControl(
-    classProbs = T,
-    summaryFunction = twoClassSummary
-  ),
+  trControl = trainControlGlass,
   preProcess = c("center","scale"),
-  metric="ROC"
+  metric="ROC",
+  tuneGrid = expand.grid(k = c(1,3,5,7,9,11))
 )
 
 model.mwmote.glass <- train(
   Class ~ .,
   data = glassDataset.mwmote,
   method = "knn",
-  trControl = trainControl(
-    classProbs = T,
-    summaryFunction = twoClassSummary
-  ),
+  trControl = trainControlGlass,
   preProcess = c("center","scale"),
-  metric="ROC"
+  metric="ROC",
+  tuneGrid = expand.grid(k = c(1,3,5,7,9,11))
 )
 
 model.blsmote.glass <- train(
   Class ~ .,
   data = glassDataset.blsmote,
   method = "knn",
-  trControl = trainControl(
-    classProbs = T,
-    summaryFunction = twoClassSummary
-  ),
+  trControl = trainControlGlass,
   preProcess = c("center","scale"),
-  metric="ROC"
+  metric="ROC",
+  tuneGrid = expand.grid(k = c(1,3,5,7,9,11))
 )
 
 model.dbsmote.glass <- train(
   Class ~ .,
   data = glassDataset.dbsmote,
   method = "knn",
-  trControl = trainControl(
-    classProbs = T,
-    summaryFunction = twoClassSummary
-  ),
+  trControl = trainControlGlass,
   preProcess = c("center","scale"),
-  metric="ROC"
+  metric="ROC",
+  tuneGrid = expand.grid(k = c(1,3,5,7,9,11))
 )
 
+smote.results <- data.frame(
+  smote = model.smote.glass$results$ROC,
+  mwmote = model.mwmote.glass$results$ROC,
+  blsmote = model.blsmote.glass$results$ROC,
+  dbsmote = model.dbsmote.glass$results$ROC
+)
+
+friedman.result <- friedman.test(as.matrix(smote.results))
+friedman.result
+groups <- rep(1:dim(smote.results)[2], each=dim(smote.results)[1])
+post.hoc <- pairwise.wilcox.test(
+  as.matrix(smote.results),
+  groups,
+  p.adjust = "holm",
+  paired = T
+)
+post.hoc
 ```
+
+**_Se ha utilizado el dataset Glass0 y los métodos de smote base, mwsmote, blsmote y dbsmote. Para estos algoritmos hay que configurar que imbalance ratio se desea para el nuevo dataset. Teniendo en cuenta que el imbalance ratio del dataset original es del 0.4861111, se ha puesto como imbalance ratio deseado un 0.8. Para poder comprobar las técnicas de balanceo, se ha ejecutado un kNN para cada nuevo dataset y el original utilizando la función de caret. Para comprobar si hay diferencias significativas, se ejecuta el test de friedman y se obtiene un p-value de 0.01545, cuyo valor es menor que 0.05, por lo que se rechaza la hipótesis nula y se puede afirmar que existen diferencias significativas entre entre al menos un par de algoritmos._**
+
+**_Para poder ver en que par de algoritmos existen diferencias significativas, se ejecuta a continuación un test post-hoc de holm. Con un 80% de confianza, se puede observar que los algoritmos 1 y 4, 2 y 4, y 3 y 4 se consideran equivalentes. Al igual pasa entre los algoritmos 2 y 3. Además se pueden apreciar diferencias significativas entre los algoritmos 2 y 1 a favor del algoritmo 2 (mwmote) y también entre los algoritmos 3 y 1 a favor del algoritmo 3 (blsmote)_**
+
 
 Now, make a plot comparison between the original and preprocessed
 dataset (only for SMOTE, for example). Recall that, being a 2D plot, you
@@ -855,8 +842,26 @@ must only two of the input columns. Alternatively, you can carry out a
 "tsne" prior to the plot.
 
 ```{r}
-# Visualize the data distribution between original and preprocess data.
+# PCA
+originaldataset.model.pca <- prcomp(~.-Class, data=glassDataset, rank. = 2)
+smotedataset.model.pca <- prcomp(~.-Class, data=glassDataset.smote, rank. = 2)
 
+original.pca.dataset <- data.frame(
+  predict(originaldataset.model.pca, newdata = glassDataset)
+)
+original.pca.dataset$Class <- glassDataset$Class
+
+smote.pca.dataset <- data.frame(
+  predict(smotedataset.model.pca, newdata = glassDataset.smote)
+)
+smote.pca.dataset$Class <- glassDataset.smote$Class
+
+# Visualize the data distribution between original and preprocess data.
+# Original dataset
+original.pca.dataset %>% ggvis(~PC1, ~PC2, fill = ~Class) %>% layer_points()
+
+# Dataset after smote
+smote.pca.dataset %>% ggvis(~PC1, ~PC2, fill = ~Class) %>% layer_points()
 ```
 
 ## Activity 3: Analyze the behavior of SMOTE preprocessing (optional)
