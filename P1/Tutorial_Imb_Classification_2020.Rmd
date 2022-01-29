@@ -2,7 +2,10 @@
 title: "Tutorial on Imbalanced Classification Tasks"
 author: "Daniel Ranchal Parrado (danielranchal@correo.ugr.es)"
 date: "January 29, 2022"
-output: html_notebook
+always_allow_html: true
+output:
+  pdf_document: default
+  html_notebook: default
 ---
 
 This is an R Notebook a practical session on "Data Mining: Advanced
@@ -71,7 +74,7 @@ today. Packages are third party add-ons or libraries that we can use in
 R.
 
 ```{r}
-renv::install(c("caret","dplyr","pROC","tidyr","imbalance", "markdown", "mime", "ellipse", "themis"))
+install.packages(c("caret","dplyr","pROC","tidyr","imbalance", "markdown", "mime", "ellipse", "themis"))
 ```
 
 **NOTE:** We may need other packages, but caret should ask us if we want
@@ -584,7 +587,7 @@ comparison_metric <- function(models) {
 comparison_metric(models)
 ```
 
-#Additional activities
+# Additional activities
 
 The former tutorial served as a guide to understand the whole procedure
 to be carried out when addressing a classification problem that presents
