@@ -16,6 +16,13 @@
       "Repository": "CRAN",
       "Hash": "cc8c8c4d61346cde1ca60030ff9c241f"
     },
+    "Matrix": {
+      "Package": "Matrix",
+      "Version": "1.4-0",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "130c0caba175739d98f2963c6a407cf6"
+    },
     "RWeka": {
       "Package": "RWeka",
       "Version": "0.4-44",
@@ -36,6 +43,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "2a997a29758c334d27bc5faea4391b11"
+    },
+    "lattice": {
+      "Package": "lattice",
+      "Version": "0.20-45",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "b64cdbb2b340437c4ee047a1f4c4377b"
     },
     "libcoin": {
       "Package": "libcoin",
@@ -78,6 +92,13 @@
       "Source": "Repository",
       "Repository": "CRAN",
       "Hash": "ea3ca1d9473daabb3cd0f1b4f974c1ed"
+    },
+    "survival": {
+      "Package": "survival",
+      "Version": "3.2-13",
+      "Source": "Repository",
+      "Repository": "CRAN",
+      "Hash": "6f0a0fadc63bc6570fe172770f15bbc4"
     }
   }
 }
