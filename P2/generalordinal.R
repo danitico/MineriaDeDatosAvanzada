@@ -120,8 +120,11 @@ predict_ordinal <- function(models, test) {
 }
 
 naive_bayes <- make_Weka_classifier("weka/classifiers/bayes/NaiveBayes")
-datasets <- get_train_test_dataset("data/esl.arff")
+datasets <- get_train_test_dataset("data/swd.arff")
 
 model_list <- train_ordinal(naive_bayes, datasets$train)
 predictions <- predict_ordinal(model_list, datasets$test)
 predictions
+
+# MZE
+1 - mean(predictions == datasets$test$class)

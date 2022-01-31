@@ -1,7 +1,6 @@
 require(xgboost)
 require(farff)
 require(readr)
-require(caret)
 set.seed(42)
 
 
@@ -97,8 +96,11 @@ predict_monotonic <- function(models, test) {
     return(final_prediction_labels)
 }
 
-datasets <- get_train_test_dataset("data/esl.arff")
+datasets <- get_train_test_dataset("data/swd.arff")
 
 model_list <- train_monotonic(datasets$train)
 predictions <- predict_monotonic(model_list, datasets$test)
 predictions
+
+# MZE
+1 - mean(predictions == datasets$test$class)
