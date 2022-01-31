@@ -22,7 +22,7 @@ get_train_test_dataset <- function(dataset_name) {
 }
 
 
-train_ordinal <- function (train_dataset, classifier) {
+train_ordinal <- function (classifier, train_dataset) {
     number_classes <- length(levels(train_dataset$class))
 
     dataset_list <- lapply(
@@ -117,6 +117,6 @@ predict_ordinal <- function(models, test) {
 naive_bayes <- make_Weka_classifier("weka/classifiers/bayes/NaiveBayes")
 datasets <- get_train_test_dataset("data/swd.arff")
 
-model_list <- train_ordinal(datasets$train, naive_bayes)
+model_list <- train_ordinal(naive_bayes, datasets$train)
 predictions <- predict_ordinal(model_list, datasets$test)
 predictions
