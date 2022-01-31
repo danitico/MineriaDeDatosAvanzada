@@ -1,4 +1,5 @@
 require(farff)
+require(readr)
 require(RWeka)
 set.seed(42)
 
@@ -25,6 +26,7 @@ get_train_test_dataset <- function(dataset_name) {
 train_ordinal <- function (classifier, train_dataset) {
     number_classes <- length(levels(train_dataset$class))
 
+    # In this step, number_classes - 1 datasets are generated
     dataset_list <- lapply(
         levels(train_dataset$class)[-number_classes],
         function (i) {
@@ -36,6 +38,7 @@ train_ordinal <- function (classifier, train_dataset) {
         }
     )
 
+    # The list of datasets is iterated and a list of models is returned
     model_list <- lapply(
         dataset_list,
         function (dataset) {
@@ -47,6 +50,7 @@ train_ordinal <- function (classifier, train_dataset) {
 }
 
 predict_ordinal <- function(models, test) {
+    # the probability for each instance from each model is calculated
     prediction_probs <- lapply(
         models,
         function (generic_model) {
@@ -66,7 +70,7 @@ predict_ordinal <- function(models, test) {
     )
 
     # Iteration per instance (3rd dimension)
-    # We apply the tranpose function to the output of the apply function
+    # We apply the transpose function to the output of the apply function
     # to represent the test instances as the rows and the probabilities of each
     # class as the columns
     class_probs <- t(apply(
@@ -103,6 +107,7 @@ predict_ordinal <- function(models, test) {
         }
     ))
 
+    # The level name is taken for each test instance
     prediction_label <- apply(
         class_probs,
         1,
@@ -115,7 +120,7 @@ predict_ordinal <- function(models, test) {
 }
 
 naive_bayes <- make_Weka_classifier("weka/classifiers/bayes/NaiveBayes")
-datasets <- get_train_test_dataset("data/swd.arff")
+datasets <- get_train_test_dataset("data/esl.arff")
 
 model_list <- train_ordinal(naive_bayes, datasets$train)
 predictions <- predict_ordinal(model_list, datasets$test)

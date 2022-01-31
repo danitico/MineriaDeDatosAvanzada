@@ -1,5 +1,7 @@
 require(xgboost)
 require(farff)
+require(readr)
+require(caret)
 set.seed(42)
 
 
@@ -50,11 +52,11 @@ train_monotonic <- function (train_dataset) {
             )
 
             # Then the monotone constraints are taken into account
-            # as well as the objectiv, a logistic regression
+            # as well as the objective, a logistic regression
             # a 10 rounds iteration is set
             xgb.train(
                 params = list(
-                    monotone_constraints = rep(1, size = dim(dataset)[2] - 1),
+                    monotone_constraints = 1,
                     objective = "binary:logistic"
                 ),
                 data=dmatrix,
@@ -68,7 +70,7 @@ train_monotonic <- function (train_dataset) {
 
 predict_monotonic <- function(models, test) {
     # Then the predictions for each test instance from each model are calculated
-    prediction_labels <- sapply(
+    prediction_scores <- sapply(
         models,
         function (generic_model) {
             dmatrix_test <- xgb.DMatrix(
@@ -80,21 +82,22 @@ predict_monotonic <- function(models, test) {
     )
 
     # After that, the predictions labels are transformed to 0s and 1s
-    prediction_labels <- ifelse(prediction_labels > 0.5, 1, 0)
+    prediction_labels <- ifelse(prediction_scores > 0.5, 1, 0)
 
-    # And finally,the 1s are sumed and we take in account the first class by summing 1
+    # And finally,the 1s are added and we take in account the first class by adding 1
+    # Then with that sum, we get the level name
     final_prediction_labels <- apply(
         prediction_labels,
         1,
         function (x) {
-            sum(x) + 1
+            levels(test$class)[sum(x) + 1]
         }
     )
 
     return(final_prediction_labels)
 }
 
-datasets <- get_train_test_dataset("data/swd.arff")
+datasets <- get_train_test_dataset("data/esl.arff")
 
 model_list <- train_monotonic(datasets$train)
 predictions <- predict_monotonic(model_list, datasets$test)
