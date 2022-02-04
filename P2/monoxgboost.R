@@ -104,3 +104,19 @@ predictions
 
 # MZE
 1 - mean(predictions == datasets$test$class)
+
+# Mean zero one error has been used to measure the quality of the ordinal classifier
+# In this metric, the smaller the value is, the better the classifier is.
+# It is calculated as 1 - accuracy
+
+# era.arff dataset
+# The MZE obtained for this dataset is 0.74
+
+# esl.arff dataset
+# The MZE obtained for this dataset is 0.24
+
+# lev.arff dataset
+# The MZE obtained for this dataset is 0.38
+
+# swd.arff dataset
+# The MZE obtained for this dataset is 0.36
